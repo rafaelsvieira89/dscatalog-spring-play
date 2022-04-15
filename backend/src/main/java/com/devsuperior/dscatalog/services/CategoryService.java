@@ -47,4 +47,12 @@ public class CategoryService {
 		return new CategoryDTO(entity);
 	}
 	
+	@Transactional
+	public void delete(long id) {
+		
+		repository.deleteById(id);	
+		
+		
+	}
+	
 }
