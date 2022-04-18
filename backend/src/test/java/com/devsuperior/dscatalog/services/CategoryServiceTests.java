@@ -29,6 +29,10 @@ public class CategoryServiceTests {
 		existingId = 1L;
 		nonExistingId = 1000L;
 		
+		
+		
+		
+		
 		//Quando eu chamar deleteById com Id existente, não vai fazer nada
 		Mockito.doNothing().when(repository).deleteById(existingId);
 		
@@ -53,18 +57,18 @@ public class CategoryServiceTests {
 	}
 	
 	@Test
-	public void deleteShouldTheowExceptionWhenIdExists() {
+	public void deleteShouldThrowEmptyResultDataExceptionWhenIdDoesNotExists() {
 		//Arrange
 		
 		//Act
 		
 		
 		//Assert
-		Assertions.assertDoesNotThrow(() -> {
-			service.delete(existingId);
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+			service.delete(nonExistingId);
 		});
 		
 		//verifica se o método abaixo foi chamado no teste acima
-		Mockito.verify(repository).deleteById(existingId);
+		Mockito.verify(repository).deleteById(nonExistingId);
 	}
 }
