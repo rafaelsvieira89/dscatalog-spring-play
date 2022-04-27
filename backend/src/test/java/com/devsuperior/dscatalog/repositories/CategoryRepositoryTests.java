@@ -17,7 +17,7 @@ public class CategoryRepositoryTests {
 	
 	private long existingId = 1L;
 	private long nonExistingId = 1000L;
-	private long countTotalCategories = 5L;
+	private long countTotalCategories = 3L;
 	
 	@Autowired
 	private CategoryRepository repository;
