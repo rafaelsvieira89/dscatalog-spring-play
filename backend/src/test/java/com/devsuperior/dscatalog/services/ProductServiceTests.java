@@ -1,6 +1,8 @@
 package com.devsuperior.dscatalog.services;
 
 import com.devsuperior.dscatalog.repositories.ProductRepository;
+import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
+import com.devsuperior.dscatalog.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -32,45 +35,57 @@ public class ProductServiceTests {
 
     private long existingId;
     private long nonExistingId;
+    private long dependentId;
 
     @BeforeEach
-    void setUp() throws Exception{
+    void setUp() {
         existingId = 1L;
         nonExistingId = 1000L;
+        dependentId = 4L;
 
         Mockito.doNothing().when(repository).deleteById(existingId);
 
         Mockito.doThrow(EmptyResultDataAccessException.class)
                 .when(repository)
                 .deleteById(nonExistingId);
+
+        Mockito.doThrow(DataIntegrityViolationException.class)
+                .when(repository)
+                .deleteById(dependentId);
     }
 
     @Test
     public void deleteShouldDoNothingWhenIdExists(){
 
-        Assertions.assertDoesNotThrow(() -> {
-            service.delete(existingId);
-        });
+        Assertions.assertDoesNotThrow(() -> service.delete(existingId));
 
-        /**
-         * Verificar se o metodo deleteById foi chamado na acao acima
+        /*
+          Verificar se o metodo deleteById foi chamado na acao acima
          */
         Mockito.verify(repository, Mockito.times(1)).deleteById(existingId);
 
     }
 
     @Test
-    public void deleteShouldThrowEmptyDataAccessExceptionWhenIdDoesNotExist(){
+    public void deleteShouldThrowEntityNotFoundExceptionWhenIdDoesNotExist(){
 
-        Assertions.assertThrows(EmptyResultDataAccessException.class ,() -> {
-            service.delete(nonExistingId);
-        });
+        Assertions.assertThrows(EntityNotFoundException.class ,() -> service.delete(nonExistingId));
 
-        /**
-         * Verificar se o metodo deleteById foi chamado na acao acima
+        /*
+          Verificar se o metodo deleteById foi chamado na acao acima
          */
         Mockito.verify(repository, Mockito.times(1)).deleteById(nonExistingId);
 
+    }
+
+    @Test
+    public void deleteShouldThrowDataBaseExceptionWhenObjectAssociated(){
+        Assertions.assertThrows(DatabaseException.class ,() -> service.delete(dependentId));
+
+        /*
+          Verificar se o metodo deleteById foi chamado na acao acima
+         */
+        Mockito.verify(repository, Mockito.times(1)).deleteById(dependentId);
     }
 
 }

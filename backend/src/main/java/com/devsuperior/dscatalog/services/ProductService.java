@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -82,12 +84,13 @@ public class ProductService {
 	}
 
 	public void delete(long id) {
-		try {
-		repository.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
-			throw new EmptyResultDataAccessException("Nao encontrado", 0);
+		try{
+			repository.deleteById(id);
+		}catch(EmptyResultDataAccessException e){
+			throw new EntityNotFoundException("Entity not found");
+		}catch (DataIntegrityViolationException e){
+			throw new DatabaseException("Integrity violation.");
 		}
-
 	}
 
 	@Transactional(readOnly = true)
