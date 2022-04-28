@@ -54,4 +54,29 @@ public class ProductRepositoryTests {
         //Act
         Assertions.assertEquals(++lastId, product.getId());
     }
+
+    @Test
+    public void findByIdShouldReturnNonEmptyOptionalWhenIdExists(){
+        //Arrange
+        long existingId = 1L;
+
+        //Act
+        var opt = repository.findById(existingId);
+
+        //Assert
+        Assertions.assertEquals(true, opt.isPresent());
+    }
+
+    @Test
+    public void findByIdShouldReturnEmptyOptionalWhenIdDoesNotExists(){
+        //Arrange
+        long nonExistingId = 10000L;
+
+        //Act
+        var opt = repository.findById(nonExistingId);
+
+        //Assert
+        Assertions.assertEquals(true, opt.isEmpty());
+    }
+
 }
