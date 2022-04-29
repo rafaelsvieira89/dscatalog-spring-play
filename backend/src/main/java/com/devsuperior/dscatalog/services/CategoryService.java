@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsuperior.dscatalog.dtos.CategoryDTO;
 import com.devsuperior.dscatalog.entities.Category;
 import com.devsuperior.dscatalog.repositories.CategoryRepository;
-import com.devsuperior.dscatalog.services.exceptions.EntityNotFoundException;
+import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CategoryService {
@@ -38,7 +38,7 @@ public class CategoryService {
 	public CategoryDTO findById(Long id){
 		
 		Optional<Category> opt =  repository.findById(id) ; 
-		CategoryDTO dto = new CategoryDTO(opt.orElseThrow(() -> new EntityNotFoundException("Entity not found")));
+		CategoryDTO dto = new CategoryDTO(opt.orElseThrow(() -> new ResourceNotFoundException("Entity not found")));
 		 
 		return dto;
 	}
@@ -57,7 +57,7 @@ public class CategoryService {
 		try{
 			repository.deleteById(id);
 		}catch(EmptyResultDataAccessException e){
-			throw new EntityNotFoundException("Entity not found");
+			throw new ResourceNotFoundException("Entity not found");
 		}catch (DataIntegrityViolationException e){
 			throw new DatabaseException("Integrity violation.");
 		}

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +18,7 @@ import com.devsuperior.dscatalog.entities.Category;
 import com.devsuperior.dscatalog.entities.Product;
 import com.devsuperior.dscatalog.repositories.CategoryRepository;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
-import com.devsuperior.dscatalog.resources.exceptions.ResourceExceptionHandler;
-import com.devsuperior.dscatalog.services.exceptions.EntityNotFoundException;
+import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ProductService {
@@ -43,7 +41,7 @@ public class ProductService {
 	public ProductDTO findById(Long id) {
 
 		Optional<Product> opt = repository.findById(id);
-		Product entity = opt.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+		Product entity = opt.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		ProductDTO dto = new ProductDTO(entity, entity.getCategories());
 		return dto;
 	}
@@ -64,8 +62,8 @@ public class ProductService {
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
 			return new ProductDTO(entity);
-		} catch (EntityNotFoundException e) {
-			throw new EntityNotFoundException("Id not found" + id);
+		} catch (ResourceNotFoundException e) {
+			throw new ResourceNotFoundException("Id not found" + id);
 		}
 	}
 
@@ -87,7 +85,7 @@ public class ProductService {
 		try{
 			repository.deleteById(id);
 		}catch(EmptyResultDataAccessException e){
-			throw new EntityNotFoundException("Entity not found");
+			throw new ResourceNotFoundException("Entity not found");
 		}catch (DataIntegrityViolationException e){
 			throw new DatabaseException("Integrity violation.");
 		}

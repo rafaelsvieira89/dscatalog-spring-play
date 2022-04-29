@@ -1,10 +1,9 @@
 package com.devsuperior.dscatalog.services;
 
-import com.devsuperior.dscatalog.dtos.ProductDTO;
 import com.devsuperior.dscatalog.entities.Product;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
-import com.devsuperior.dscatalog.services.exceptions.EntityNotFoundException;
+import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dscatalog.tests.Factory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -107,7 +105,7 @@ public class ProductServiceTests {
     @Test
     public void deleteShouldThrowEntityNotFoundExceptionWhenIdDoesNotExist(){
 
-        Assertions.assertThrows(EntityNotFoundException.class ,() -> service.delete(nonExistingId));
+        Assertions.assertThrows(ResourceNotFoundException.class ,() -> service.delete(nonExistingId));
 
         /*
           Verificar se o metodo deleteById foi chamado na acao acima
