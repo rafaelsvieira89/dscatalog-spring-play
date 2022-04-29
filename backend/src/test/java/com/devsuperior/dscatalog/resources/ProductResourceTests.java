@@ -28,8 +28,6 @@ public class ProductResourceTests {
     @MockBean
     private ProductService service;
 
-    private ProductDTO productDTO;
-    private PageImpl<ProductDTO> page;
     private long existingId;
     private long nonExistingId;
 
@@ -38,8 +36,8 @@ public class ProductResourceTests {
         existingId = 1L;
         nonExistingId = 2L;
 
-        productDTO = Factory.createProductDTO();
-        page = new PageImpl<>(List.of(productDTO));
+        ProductDTO productDTO = Factory.createProductDTO();
+        PageImpl<ProductDTO> page = new PageImpl<>(List.of(productDTO));
 
         Mockito.when(service.findAllPaged(ArgumentMatchers.any())).thenReturn(page);
 
