@@ -5,21 +5,21 @@ import com.devsuperior.dscatalog.entities.Role;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class RoleDto implements Serializable {
+public class RoleDTO implements Serializable {
 
     private Long id;
     private String authority;
 
 
-    public RoleDto() {
+    public RoleDTO() {
     }
 
-    public RoleDto(Long id, String authority) {
+    public RoleDTO(Long id, String authority) {
         this.id = id;
         this.authority = authority;
     }
 
-    public RoleDto(Role entity) {
+    public RoleDTO(Role entity) {
         this.id = entity.getId();
         this.authority = entity.getAuthority();
     }
@@ -45,7 +45,7 @@ public class RoleDto implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RoleDto entity = (RoleDto) o;
+        RoleDTO entity = (RoleDTO) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.authority, entity.authority);
     }

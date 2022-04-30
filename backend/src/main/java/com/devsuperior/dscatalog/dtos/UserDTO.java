@@ -8,33 +8,38 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class UserDto implements Serializable {
+public class UserDTO implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
-    private Set<RoleDto> roles = new HashSet<>();
 
-    public UserDto() {
+    private Set<RoleDTO> roles = new HashSet<>();
+
+    public UserDTO() {
     }
 
-    public UserDto(Long id, String firstName, String lastName, String email, String password) {
+    public UserDTO(Long id, String firstName, String lastName, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
+
     }
 
-    public UserDto(User entity, Set<Role> roles) {
+    public UserDTO(User entity, Set<Role> roles) {
+        this(entity);
+        roles.forEach(r -> this.roles.add(new RoleDTO(r)));
+    }
+
+    public UserDTO(User entity) {
         this.id = entity.getId();
         this.firstName = entity.getFirstName();
         this.lastName = entity.getLastName();
         this.email = entity.getEmail();
-        this.password = entity.getPassword();
 
-        roles.forEach(r -> this.roles.add(new RoleDto(r)));
+
+
     }
 
 
@@ -70,33 +75,23 @@ public class UserDto implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<RoleDto> getRoles() {
+    public Set<RoleDTO> getRoles() {
         return roles;
     }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserDto entity = (UserDto) o;
+        UserDTO entity = (UserDTO) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.firstName, entity.firstName) &&
                 Objects.equals(this.lastName, entity.lastName) &&
-                Objects.equals(this.email, entity.email) &&
-                Objects.equals(this.password, entity.password) &&
-                Objects.equals(this.roles, entity.roles);
+                Objects.equals(this.email, entity.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, password, roles);
+        return Objects.hash(id, firstName, lastName, email, roles);
     }
 
     @Override
@@ -106,7 +101,6 @@ public class UserDto implements Serializable {
                 "firstName = " + firstName + ", " +
                 "lastName = " + lastName + ", " +
                 "email = " + email + ", " +
-                "password = " + password + ", " +
                 "roles = " + roles + ")";
     }
 }
