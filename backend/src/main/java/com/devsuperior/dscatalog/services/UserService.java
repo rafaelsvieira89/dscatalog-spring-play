@@ -1,7 +1,7 @@
 package com.devsuperior.dscatalog.services;
 
 import com.devsuperior.dscatalog.dtos.UserDTO;
-import com.devsuperior.dscatalog.entities.Role;
+import com.devsuperior.dscatalog.dtos.UserInsertDTO;
 import com.devsuperior.dscatalog.entities.User;
 import com.devsuperior.dscatalog.repositories.RoleRepository;
 import com.devsuperior.dscatalog.repositories.UserRepository;
@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+	/*
+	   Como no AppConfig está marcado como @Bean o spring vai injetar o método aqui
+	   por conta do Tipo do dado e a marcação @Autowired
+	 */
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	@Autowired
 	private UserRepository repository;
 	@Autowired
@@ -41,15 +48,16 @@ public class UserService {
 
 		Optional<User> opt = repository.findById(id);
 		User entity = opt.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-		UserDTO dto = new UserDTO(entity, entity.getRoles());
+		UserDTO dto = new UserDTO(entity);
 		return dto;
 	}
 
 	@Transactional
-	public UserDTO insert(UserDTO dto) {
+	public UserDTO insert(UserInsertDTO dto) {
 
 		User entity = new User();
 		copyDtoToEntity(dto, entity);
+		entity.setPassword(passwordEncoder.encode(dto.getPassword())); //Trafega somente no serviço de inserção
 		entity = repository.save(entity);
 		return new UserDTO(entity);
 	}
@@ -72,9 +80,9 @@ public class UserService {
 		entity.setLastName(dto.getLastName());
 
 		entity.getRoles().clear();
-		dto.getRoles().forEach(cat -> {
-			Role Role = RoleRepository.getOne(cat.getId());
-			entity.getRoles().add(Role);
+		dto.getRoles().forEach(r -> {
+			var role = RoleRepository.getOne(r.getId());
+			entity.getRoles().add(role);
 		});
 	}
 
