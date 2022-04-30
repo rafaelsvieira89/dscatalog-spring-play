@@ -2,6 +2,7 @@ package com.devsuperior.dscatalog.resources.exceptions;
 
 import java.time.Instant;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
@@ -22,6 +23,18 @@ public class ResourceExceptionHandler {
 		err.setTimestamp(Instant.now());
 		err.setStatus(httpStatus.value());
 		err.setError("Resource not Found");
+		err.setMessage(e.getMessage());
+		err.setPath(request.getRequestURI());
+		return ResponseEntity.status(httpStatus).body(err);
+	}
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<StandardError> entityNotFound(EntityNotFoundException e, HttpServletRequest request){
+		StandardError err = new StandardError();
+		var httpStatus = HttpStatus.NOT_FOUND;
+		err.setTimestamp(Instant.now());
+		err.setStatus(httpStatus.value());
+		err.setError("Entity not Found");
 		err.setMessage(e.getMessage());
 		err.setPath(request.getRequestURI());
 		return ResponseEntity.status(httpStatus).body(err);
