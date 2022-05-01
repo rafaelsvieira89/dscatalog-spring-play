@@ -1,0 +1,53 @@
+package com.devsuperior.dscatalog.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+@Configuration
+@EnableAuthorizationServer //faz o processamento para dizer que representa o AuthServer do OAUTH
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtAccessTokenConverter accessTokenConverter;
+
+    @Autowired
+    private JwtTokenStore tokenStore;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.tokenKeyAccess("permitAll()") //nome de um metodo
+                .checkTokenAccess("isAuthenticated()");  //nome do outro método
+    }
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        //definido como vai ser a autenticação e os dados do cliente
+        clients.inMemory().withClient("dscatalog") //nome que a aplicacao Web tem que informar para acessar o BackEnd
+                .secret(passwordEncoder.encode("dscatalog123")) //senha da aplicacao e não do usuario
+                .scopes("read", "write")
+                .authorizedGrantTypes("password") //tipo de login do OAutH
+                .accessTokenValiditySeconds(86400);//tempo de expiracao do token
+    }
+
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints.authenticationManager(authenticationManager) //Configurado como Bean no WebSecurityconfig
+                .tokenStore(tokenStore)
+                .accessTokenConverter(accessTokenConverter);
+    }
+}

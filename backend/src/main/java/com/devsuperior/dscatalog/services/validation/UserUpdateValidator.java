@@ -30,6 +30,7 @@ public class UserUpdateValidator implements ConstraintValidator<UserUpdateValid,
     public boolean isValid(UserUpdateDTO dto, ConstraintValidatorContext context) {
 
         //Buscar variaveis da URI para pegar campo id informado na URL
+        @SuppressWarnings("unchecked")
         var uriVars = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         var userId = Long.parseLong(uriVars.get("id"));
 
